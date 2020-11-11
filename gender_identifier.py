@@ -13,9 +13,25 @@ def classify_gender(names):
     data_set = [(extract_features(name), gender) for (name, gender) in names]
     train_set, validation_set, test_set = split_corpus(data_set)
 
+    classifier = nltk.DecisionTreeClassifier
+    classifier.train(train_set)
+
+    analyze_classifier(classifier, validation_set)
+    evaluate_classifier(classifier, test_set)
+
+
+def analyze_classifier(classifier, validation_set):
+    pass
+
+
+def evaluate_classifier(classifier, test_set):
+    pass
+
 
 def extract_features(name):
-    features = {}
+    features = {
+        'last_letter': name[-1].lower()
+    }
     return features
 
 
