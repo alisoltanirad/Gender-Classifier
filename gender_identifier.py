@@ -2,6 +2,7 @@
 # Dependencies: nltk
 import ssl
 import random
+import string
 import nltk
 
 def main():
@@ -14,14 +15,13 @@ def classify_gender(names):
     train_set, validation_set, test_set = split_corpus(data_set)
 
     classifier = nltk.NaiveBayesClassifier.train(train_set)
-    # classifier.train(train_set)
 
     analyze_classifier(classifier, validation_set)
     evaluate_classifier(classifier, test_set)
 
 
 def analyze_classifier(classifier, validation_set):
-    #classifier.show_most_informative_features(classifier)
+    classifier.show_most_informative_features(50)
     show_errors(classifier, validation_set)
 
 
@@ -31,7 +31,7 @@ def show_errors(classifier, validation_set):
     for (gender, guess, features) in errors:
         print(type(gender))
         print('correct:{:<8} guess:{:<8} features:{}'.format(gender, guess,
-                                                              features))
+                                                             features))
 
 
 def get_errors(classifier, validation_set):
@@ -46,13 +46,16 @@ def get_errors(classifier, validation_set):
 
 def evaluate_classifier(classifier, test_set):
     accuracy = nltk.classify.accuracy(classifier, test_set)
-    print('- Evaluation:\nAccuracy: {:.2%}'.format(accuracy))
+    print('Evaluation:\n- Accuracy: {:.2%}'.format(accuracy))
 
 
 def extract_features(name):
     features = {
-        'last_letter': name[-1].lower()
+        'last_letter': name[-1].lower(),
+        'first_letter': name[0].lower()
     }
+    for letter in string.ascii_lowercase:
+        features['count({})'.format(letter)] = name.lower().count(letter)
     return features
 
 
