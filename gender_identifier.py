@@ -21,7 +21,25 @@ def classify_gender(names):
 
 
 def analyze_classifier(classifier, validation_set):
-    pass
+    classifier.show_most_informative_features()
+    show_errors(classifier, validation_set)
+
+
+def show_errors(classifier, validation_set):
+    errors = get_errors(classifier, validation_set)
+    for (gender, guess, features) in errors:
+        print('correct:{:<8} guess:{:<8} features:{}').format(gender, guess,
+                                                              features)
+
+
+def get_errors(classifier, validation_set):
+    errors = []
+    for (features, gender) in validation_set:
+        guess = classifier.classify(features)
+        if guess != gender:
+            errors.append((gender, guess, features))
+
+    return errors
 
 
 def evaluate_classifier(classifier, test_set):
