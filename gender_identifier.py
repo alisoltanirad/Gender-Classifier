@@ -13,23 +13,25 @@ def classify_gender(names):
     data_set = [(extract_features(name), gender) for (name, gender) in names]
     train_set, validation_set, test_set = split_corpus(data_set)
 
-    classifier = nltk.DecisionTreeClassifier
-    classifier.train(train_set)
+    classifier = nltk.NaiveBayesClassifier.train(train_set)
+    # classifier.train(train_set)
 
     analyze_classifier(classifier, validation_set)
     evaluate_classifier(classifier, test_set)
 
 
 def analyze_classifier(classifier, validation_set):
-    classifier.show_most_informative_features()
+    #classifier.show_most_informative_features(classifier)
     show_errors(classifier, validation_set)
 
 
 def show_errors(classifier, validation_set):
     errors = get_errors(classifier, validation_set)
+    print('- Errors:')
     for (gender, guess, features) in errors:
-        print('correct:{:<8} guess:{:<8} features:{}').format(gender, guess,
-                                                              features)
+        print(type(gender))
+        print('correct:{:<8} guess:{:<8} features:{}'.format(gender, guess,
+                                                              features))
 
 
 def get_errors(classifier, validation_set):
@@ -58,7 +60,7 @@ def split_corpus(data_set):
     test_set = data_set[-round(len(data_set)/5):]
     train_validation = data_set[:-round(len(data_set)/5)]
     train_set = train_validation[:-round(len(train_validation)/5)]
-    validation_set = train_validation[-round(len(train_validation)/5)]
+    validation_set = train_validation[-round(len(train_validation)/5):]
     return train_set, validation_set, test_set
 
 
