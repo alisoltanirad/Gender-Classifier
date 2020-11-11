@@ -25,7 +25,8 @@ def analyze_classifier(classifier, validation_set):
 
 
 def evaluate_classifier(classifier, test_set):
-    pass
+    accuracy = nltk.classify.accuracy(classifier, test_set)
+    print('- Evaluation:\nAccuracy: {:.2%}'.format(accuracy))
 
 
 def extract_features(name):
