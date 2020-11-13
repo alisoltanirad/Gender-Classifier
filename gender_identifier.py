@@ -6,27 +6,29 @@ import string
 import nltk
 
 def main():
-    names = get_names()
-    classify_gender(names)
+    classify_gender(get_names())
 
 
 def classify_gender(names):
-    data_set = [(extract_features(name), gender) for (name, gender) in names]
-    train_set, test_set = split_corpus(data_set)
-
+    train_set, test_set = preprocess_data(names)
     classifier = nltk.NaiveBayesClassifier.train(train_set)
-
-    analyze_classifier(classifier)
     evaluate_classifier(classifier, test_set)
 
 
-def analyze_classifier(classifier):
-    classifier.show_most_informative_features(50)
-
-
 def evaluate_classifier(classifier, test_set):
-    accuracy = nltk.classify.accuracy(classifier, test_set)
-    print('\nEvaluation\n\t- Accuracy: {:.2%}'.format(accuracy))
+    classifier.show_most_informative_features(50)
+    print('\nEvaluation\n\t- Accuracy: {:.2%}'.format(
+        nltk.classify.accuracy(classifier, test_set)))
+
+
+def preprocess_data(names):
+    data_set = [(extract_features(name), gender) for (name, gender) in names]
+    return split_corpus(data_set)
+
+
+def split_corpus(data_set):
+    test_size = round(len(data_set) / 4)
+    return data_set[test_size:], data_set[:test_size]
 
 
 def extract_features(name):
@@ -37,12 +39,6 @@ def extract_features(name):
     for letter in string.ascii_lowercase:
         features['count({})'.format(letter)] = name.lower().count(letter)
     return features
-
-
-def split_corpus(data_set):
-    train_set = data_set[:-round(len(data_set)/4)]
-    test_set = data_set[-round(len(data_set)/4):]
-    return train_set, test_set
 
 
 def get_names():
