@@ -1,3 +1,3 @@
 # Gender-Identifier
 
-Python code to classify gender of names.
+Python module to classify gender of names.
