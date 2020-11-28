@@ -1,4 +1,4 @@
-# https://github.com/alisoltanirad/Gender-Identifier.git
+# https://github.com/alisoltanirad/Gender-Classifier
 # Dependencies: nltk
 import ssl
 import random
