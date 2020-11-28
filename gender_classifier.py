@@ -14,15 +14,17 @@ class GenderClassifier:
     def classify(self, name):
         return self.classifier.classify(self._extract_features(name))
 
-    def _train_classifier(self):
-        self.classifier = nltk.NaiveBayesClassifier.train(self._train_set)
-
     def evaluate(self):
         accuracy = nltk.classify.accuracy(self.classifier, self._test_set)
+        most_informative_features = self.classifier.most_informative_features(50)
         evaluation_data = {
             'Accuracy': accuracy,
+            'Most_Informative_Features': most_informative_features,
         }
         return evaluation_data
+
+    def _train_classifier(self):
+        self.classifier = nltk.NaiveBayesClassifier.train(self._train_set)
 
     def _prepare_dataset(self):
         self._download_corpus()
