@@ -5,53 +5,58 @@ import random
 import string
 import nltk
 
+class GenderClassifier:
+
+    def __init__(self):
+        self._prepare_dataset()
+        self._train_classifier()
+
+    def classify(self, name):
+        return self.classifier.classify(self._extract_features(name))
+
+    def _train_classifier(self):
+        self.classifier = nltk.NaiveBayesClassifier.train(self._train_set)
+
+    def evaluate(self):
+        accuracy = nltk.classify.accuracy(self.classifier, self._test_set)
+        evaluation_data = {
+            'Accuracy': accuracy,
+        }
+        return evaluation_data
+
+    def _prepare_dataset(self):
+        self._download_corpus()
+        self._data_set = [(self._extract_features(name), gender)
+                          for (name, gender) in self._get_names()]
+        test_size = round(len(self._data_set) / 4)
+        self._train_set = self._data_set[test_size:]
+        self._test_set = self._data_set[:test_size]
+
+    def _extract_features(self, name):
+        features = {
+            'last_letter': name[-1].lower(),
+            'first_letter': name[0].lower()
+        }
+        for letter in string.ascii_lowercase:
+            features['count({})'.format(letter)] = name.lower().count(letter)
+        return features
+
+    def _get_names(self):
+        names = [(name, 'male') for name in
+                 nltk.corpus.names.words('male.txt')] + \
+                [(name, 'female') for name in
+                 nltk.corpus.names.words('female.txt')]
+        random.shuffle(names)
+        return names
+
+    def _download_corpus(self):
+        ssl._create_default_https_context = ssl._create_unverified_context
+        nltk.download('names')
+
+
 def main():
-    classify_gender(get_names())
-
-
-def classify_gender(names):
-    train_set, test_set = preprocess_data(names)
-    classifier = nltk.NaiveBayesClassifier.train(train_set)
-    evaluate_classifier(classifier, test_set)
-
-
-def evaluate_classifier(classifier, test_set):
-    classifier.show_most_informative_features(50)
-    print('\nEvaluation\n\t- Accuracy: {:.2%}'.format(
-        nltk.classify.accuracy(classifier, test_set)))
-
-
-def preprocess_data(names):
-    data_set = [(extract_features(name), gender) for (name, gender) in names]
-    return split_corpus(data_set)
-
-
-def split_corpus(data_set):
-    test_size = round(len(data_set) / 4)
-    return data_set[test_size:], data_set[:test_size]
-
-
-def extract_features(name):
-    features = {
-        'last_letter': name[-1].lower(),
-        'first_letter': name[0].lower()
-    }
-    for letter in string.ascii_lowercase:
-        features['count({})'.format(letter)] = name.lower().count(letter)
-    return features
-
-
-def get_names():
-    download_corpus()
-    names = [(name, 'male') for name in nltk.corpus.names.words('male.txt')] + \
-            [(name, 'female') for name in nltk.corpus.names.words('female.txt')]
-    random.shuffle(names)
-    return names
-
-
-def download_corpus():
-    ssl._create_default_https_context = ssl._create_unverified_context
-    nltk.download('names')
+    classifier = GenderClassifier()
+    print(classifier.evaluate()['Accuracy'])
 
 
 if __name__ == '__main__':
